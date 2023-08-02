@@ -1,4 +1,7 @@
 import { AccountDatabase } from "../database/AccountDatabase"
+import { BadRequestError } from "../errors/BadRequestError"
+import { DuplicityError } from "../errors/DuplicityError"
+import { NotFoundError } from "../errors/NotFoundError"
 import { Account } from "../models/Account"
 import { AccountDB } from "../types"
 
@@ -22,7 +25,7 @@ export class AccountBusiness {
         const accountDB = await accountDatabase.findAccountById(id)
 
         if (!accountDB) {
-            throw new Error("'id' não encontrado")
+            throw new NotFoundError("'id' não encontrado")
         }
 
         const account = new Account(
@@ -43,18 +46,18 @@ export class AccountBusiness {
         const { id, ownerId } = input
 
         if (typeof id !== "string") {
-            throw new Error("'id' deve ser string")
+            throw new NotFoundError("'id' deve ser string")
         }
 
         if (typeof ownerId !== "string") {
-            throw new Error("'ownerId' deve ser string")
+            throw new BadRequestError("'ownerId' deve ser string")
         }
 
         const accountDatabase = new AccountDatabase()
         const accountDBExists = await accountDatabase.findAccountById(id)
 
         if (accountDBExists) {
-            throw new Error("'id' já existe")
+            throw new DuplicityError("'id' já existe")
         }
 
         const newAccount = new Account(
